@@ -1,5 +1,4 @@
 const { searchForWorkspaceRoot } = require("vite");
-const react = require("@vitejs/plugin-react");
 
 // https://vitejs.dev/config/
 const getViteConfigDev = (port) => ({
@@ -21,25 +20,24 @@ const getViteConfigDev = (port) => ({
     },
   },
   optimizeDeps: {
-    // what else can we do here?
-    include: [
-      "react",
-      "react-dom",
-      "react-dom/client",
-      "styled-components",
-      "hoist-non-react-statics",
-      "react-is",
-      "lodash.uniqueid",
-      "@primer/react",
-      "picomatch-browser",
-    ],
+    // // what else can we do here?
+    // include: [
+    //   "react",
+    //   "react-dom",
+    //   "react-dom/client",
+    //   "styled-components",
+    //   "hoist-non-react-statics",
+    //   "react-is",
+    //   "lodash.uniqueid",
+    //   "@primer/react",
+    //   "picomatch-browser",
+    // ],
   },
   build: {
     commonjsOptions: {
       include: /node_modules/,
     },
   },
-  plugins: [react()],
 });
 
 module.exports = getViteConfigDev;

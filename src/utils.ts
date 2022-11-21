@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import type {
   BlocksRepo,
   CommonBlockProps,
@@ -34,35 +33,22 @@ export const callbackFunctionsInternal = {
     makeRequest("private__onFetchInternalEndpoint", { path, params }),
 };
 
-export const useHandleCallbacks = (origin: string) => {
-  useEvent("message", (event: MessageEvent) => {
-    const { data } = event;
-    if (origin !== "*" && event.origin !== origin) return;
-    const request = pendingRequests[data.requestId];
-    if (!request) return;
+// export const useHandleCallbacks = (origin: string) => {
+//   useEvent("message", (event: MessageEvent) => {
+//     const { data } = event;
+//     if (origin !== "*" && event.origin !== origin) return;
+//     const request = pendingRequests[data.requestId];
+//     if (!request) return;
 
-    delete pendingRequests[data.requestId];
+//     delete pendingRequests[data.requestId];
 
-    if (data.error) {
-      request.reject(data.error);
-    } else {
-      request.resolve(data.response);
-    }
-  });
-};
-
-export const useEvent = <K extends keyof WindowEventMap>(
-  type: K,
-  onEvent: (event: WindowEventMap[K]) => void
-) => {
-  useEffect(() => {
-    const onEventInstance = (event: WindowEventMap[K]) => {
-      onEvent(event);
-    };
-    addEventListener(type, onEventInstance);
-    return () => removeEventListener(type, onEventInstance);
-  }, [type, onEvent]);
-};
+//     if (data.error) {
+//       request.reject(data.error);
+//     } else {
+//       request.resolve(data.response);
+//     }
+//   });
+// };
 
 let uniqueId = 0;
 const getUniqueId = () => {
@@ -100,37 +86,4 @@ export const postMessage = (type: string, payload: any, otherArgs = {}) => {
     },
     "*"
   );
-};
-
-export const useIframeParentInterface = (
-  origin: string
-): [Record<string, any>, (_: FileBlockProps | FolderBlockProps) => void] => {
-  const [bundleProps, setBundleProps] = useState<Record<string, any>>({});
-
-  useEvent("message", (event: MessageEvent) => {
-    const { data } = event;
-    if (origin != "*" && event.origin !== origin) return;
-    if (data.type === "setProps") {
-      // extend existing props so we can update partial props
-      setBundleProps((props) => ({
-        ...props,
-        ...data.props,
-      }));
-    }
-  });
-
-  const onLoad = () =>
-    postMessage("loaded", {}, { hash: window.location.hash });
-  useEffect(() => {
-    onLoad();
-  }, []);
-  useEvent("hashchange", () => {
-    onLoad();
-  });
-
-  return [
-    bundleProps,
-    (props: FileBlockProps | FolderBlockProps) =>
-      setBundleProps((prevProps) => ({ ...prevProps, ...{ props } })),
-  ];
 };

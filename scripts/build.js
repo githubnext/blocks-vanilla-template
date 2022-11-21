@@ -18,7 +18,7 @@ const build = async () => {
       format: "iife",
       globalName: "BlockBundle",
       minify: true,
-      external: ["fs", "path", "assert", "react", "react-dom", "@primer/react"],
+      // external: ["fs", "path", "assert", "react", "react-dom", "@primer/react"],
     });
   });
 

@@ -1,83 +1,25 @@
-import {
-  Block,
-  BlocksRepo,
-  FileBlockProps,
-  FileData,
-  FolderData,
-  getLanguageFromFilename,
-} from "@githubnext/blocks";
-import { Box, Button } from "@primer/react";
-import ReactDOM from "react-dom/client";
+import { FileBlockProps, FolderBlockProps } from "@githubnext/blocks";
 import "./index.css";
 
-function BlockComponent(props: FileBlockProps) {
-  const { context, content, metadata, onUpdateMetadata } = props;
-  const language = Boolean(context.path)
-    ? getLanguageFromFilename(context.path)
-    : "N/A";
+const root = document.getElementById("root")
 
-  return (
-    <Box p={4}>
-      <Box
-        borderColor="border.default"
-        borderWidth={1}
-        borderStyle="solid"
-        borderRadius={6}
-        overflow="hidden"
-      >
-        <Box
-          bg="canvas.subtle"
-          p={3}
-          borderBottomWidth={1}
-          borderBottomStyle="solid"
-          borderColor="border.default"
-        >
-          File: {context.path} {language}
-        </Box>
-        <Box p={4}>
-          <p>Metadata example: this button has been clicked:</p>
-          <Button
-            onClick={() =>
-              onUpdateMetadata({ number: (metadata.number || 0) + 1 })
-            }
-          >
-            {metadata.number || 0} times
-          </Button>
-          <pre className="mt-3 p-3">{content}</pre>
-        </Box>
-      </Box>
-    </Box>
-  );
-}
+function setProps(props: FileBlockProps | FolderBlockProps) {
+  console.log("setProps", props);
+  const newPre = document.createElement("pre");
+  newPre.innerText = props.content
+  const button = document.createElement("button");
+  button.innerText = "Click me";
+  button.onclick = async () => {
+    props.onUpdateContent("Hello from the other side");
 
-type BlocksAPI = {
-  onUpdateMetadata: (_: any) => void;
-  onNavigateToPath: (_: string) => void;
-  onRequestUpdateContent: (_: string) => void;
-  onUpdateContent: (_: string) => void;
-  onRequestGitHubData: (
-    path: string,
-    params?: Record<string, any>
-  ) => Promise<any>;
-  onRequestBlocksRepos: (params?: {
-    path?: string;
-    searchTerm?: string;
-    repoUrl?: string;
-    type?: "file" | "folder";
-  }) => Promise<BlocksRepo[]>;
-  onStoreGet: (key: string) => Promise<any>;
-  onStoreSet: (key: string, value: any) => Promise<void>;
-};
-
-type Props = {
-  block: Block;
-  metadata: any;
-} & (FileData | FolderData);
-
-const root = ReactDOM.createRoot(document.getElementById("root")!);
-
-function setProps(props: Props, blocksAPI: BlocksAPI) {
-  root.render(<BlockComponent {...props} {...blocksAPI} />);
+    const historicalCommits = await props.onRequestGitHubData(`/repos/${props.context.owner}/${props.context.repo}/commits`, {
+      path: props.context.path,
+    });
+    console.log("historicalCommits", historicalCommits);
+  };
+  root.innerHTML = "";
+  root.appendChild(button)
+  root.appendChild(newPre)
 }
 
 export default setProps;
