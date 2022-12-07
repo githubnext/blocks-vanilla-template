@@ -44,13 +44,29 @@ const onInit = () => {
   }
 
   const elements: HTMLElement[] = [];
-  let bundleState: "notFound" | "dev" | "found" = "notFound";
+  let bundleState: "none" | "notFound" | "dev" | "found" = "none";
   let setBlockProps;
   let props = {};
   const root = ReactDOMClient.createRoot(document.getElementById("root"));
 
   const onMessage = async (event: MessageEvent) => {
     const { data } = event;
+
+    if (data.requestId) {
+      const request = pendingRequests[data.requestId];
+      if (!request) return;
+
+      delete pendingRequests[data.requestId];
+
+      if (data.error) {
+        request.reject(data.error);
+      } else {
+        request.resolve(data.response);
+      }
+
+      // don't render on API responses
+      return;
+    }
 
     if (data.type === "setProps") {
       // the `setProps` protocol is pretty ad-hoc (see `use-block-frame-messages.ts`):
@@ -62,7 +78,6 @@ const onInit = () => {
 
       if (data.props.bundle) {
         // clear old bundle state
-        props = {};
         setBlockProps = undefined;
         for (const el of elements || []) {
           document.body.removeChild(el);
@@ -116,14 +131,14 @@ ${asset.content}
           for (const el of elements) {
             document.body.appendChild(el);
           }
+          const Block = window.BlockBundle({
+            React,
+            ReactJSXRuntime,
+            ReactDOM,
+            ReactDOMClient,
+            PrimerReact,
+          }).default;
           setBlockProps = (props) => {
-            const Block = window.BlockBundle({
-              React,
-              ReactJSXRuntime,
-              ReactDOM,
-              ReactDOMClient,
-              PrimerReact,
-            }).default;
             const WrappedBlockComponent = (
               nestedProps: BlockComponentProps
             ) => {
@@ -157,47 +172,38 @@ ${asset.content}
         }
       } else if (data.props.props) {
         props = { ...props, ...data.props.props };
-
-        if (bundleState === "notFound") {
-          // TODO(jaked)
-          // render not found
-        } else {
-          const wrappedSetBlockProps = (props) => {
-            if (!setBlockProps) return;
-            const isInternal =
-              (props as unknown as { block: Block }).block.owner ===
-              "githubnext";
-            const filteredCallbackFunctions = isInternal
-              ? callbackFunctionsInternal
-              : callbackFunctions;
-            const onUpdateContent = (content: string) => {
-              // the app does not send async content updates back to the block that
-              // originated them, to avoid overwriting subsequent changes; we update the
-              // content locally so controlled components work. this doesn't overwrite
-              // subsequent changes because it's synchronous.
-              props = { ...props, content };
-              wrappedSetBlockProps(props);
-              filteredCallbackFunctions["onUpdateContent"](content);
-            };
-            setBlockProps({
-              ...props,
-              ...filteredCallbackFunctions,
-              onUpdateContent,
-            });
-          };
-          wrappedSetBlockProps(props);
-        }
       }
-    } else if (data.requestId) {
-      const request = pendingRequests[data.requestId];
-      if (!request) return;
 
-      delete pendingRequests[data.requestId];
-
-      if (data.error) {
-        request.reject(data.error);
+      if (bundleState === "notFound") {
+        // TODO(jaked)
+        // render not found
+      } else if (bundleState === "none" || !props.block) {
+        // TODO(jaked)
+        // render loading
       } else {
-        request.resolve(data.response);
+        const wrappedSetBlockProps = (props) => {
+          if (!setBlockProps) return;
+          const isInternal =
+            (props as unknown as { block: Block }).block.owner === "githubnext";
+          const filteredCallbackFunctions = isInternal
+            ? callbackFunctionsInternal
+            : callbackFunctions;
+          const onUpdateContent = (content: string) => {
+            // the app does not send async content updates back to the block that
+            // originated them, to avoid overwriting subsequent changes; we update the
+            // content locally so controlled components work. this doesn't overwrite
+            // subsequent changes because it's synchronous.
+            props = { ...props, content };
+            wrappedSetBlockProps(props);
+            filteredCallbackFunctions["onUpdateContent"](content);
+          };
+          setBlockProps({
+            ...props,
+            ...filteredCallbackFunctions,
+            onUpdateContent,
+          });
+        };
+        wrappedSetBlockProps(props);
       }
     }
   };
