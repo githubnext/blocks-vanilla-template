@@ -2,7 +2,7 @@
   {
     "type": "file",
     "id": "file-block",
-    "title": "Example File Block 2",
+    "title": "Vanilla Example File Block",
     "description": "A basic file block",
     "entry": "blocks/example-file-block/index.tsx",
     "matches": ["*"],
