@@ -7,7 +7,7 @@
     "build": "node scripts/build.js"
   },
   "dependencies": {
-    "@githubnext/blocks": "^2.3.2",
+    "@githubnext/blocks": "^2.3.3",
     "@primer/react": "^35.15.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

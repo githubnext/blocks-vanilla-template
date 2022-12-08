@@ -299,13 +299,14 @@
   resolved "https://registry.yarnpkg.com/@github/paste-markdown/-/paste-markdown-1.4.2.tgz#aedba0972536c2fc7944931b6e62bd43dc130592"
   integrity sha512-ZwSgPyo9nA6TRngXV0QnFT4e5ujeOGxRDWN2aa6qfimz2o2VOsJ9bFGuGvB723nvzq5z9zKr6JWGtvK7MSJj3w==
 
-"@githubnext/blocks@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@githubnext/blocks/-/blocks-2.1.1.tgz#73c65f2ff3d75b2fb8203fdf8cc1e3083e7c1a4e"
-  integrity sha512-53YsSBZRagNRjbaRRlUe9E47Vz20YPx+ZxsB9TuUjdzmnI4h4WzewJprk/L2sjNh9WcVMVCtKNB6lQGA9A6Hbw==
+"@githubnext/blocks@^2.3.3":
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@githubnext/blocks/-/blocks-2.3.3.tgz#31a8c58e1785be01ac3bab1610fd797973238c35"
+  integrity sha512-ov1cdOG7CGsRTXm1S2J4kZ25S1qgsmZcGE9ebjgMm5AlkLo/DIcAQEDQMcgoDhtUyYTZDzgQE4ml8mzzlrIX/w==
   dependencies:
     "@loadable/component" "^5.15.0"
-    "@octokit/openapi-types" "^11.2.0"
+    "@octokit/openapi-types" "^12.11.0"
+    "@octokit/types" "^6.0.0"
     "@primer/octicons-react" "^17.3.0"
     "@primer/react" "^35.2.1"
     "@vitejs/plugin-react" "^2.0.1"
@@ -397,10 +398,17 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@octokit/openapi-types@^11.2.0":
-  version "11.2.0"
-  resolved "https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-11.2.0.tgz#b38d7fc3736d52a1e96b230c1ccd4a58a2f400a6"
-  integrity sha512-PBsVO+15KSlGmiI8QAzaqvsNlZlrDlyAJYcrXBCvVUxCp7VnXjkwPoFHgjEJXx3WF9BAwkA6nfCUA7i9sODzKA==
+"@octokit/openapi-types@^12.11.0":
+  version "12.11.0"
+  resolved "https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-12.11.0.tgz#da5638d64f2b919bca89ce6602d059f1b52d3ef0"
+  integrity sha512-VsXyi8peyRq9PqIz/tpqiL2w3w80OgVMwBHltTml3LmVvXiphgeqmY9mvBw9Wu7e0QWk/fqD37ux8yP5uVekyQ==
+
+"@octokit/types@^6.0.0":
+  version "6.41.0"
+  resolved "https://registry.yarnpkg.com/@octokit/types/-/types-6.41.0.tgz#e58ef78d78596d2fb7df9c6259802464b5f84a04"
+  integrity sha512-eJ2jbzjdijiL3B4PrSQaSjuF2sPEQPVCPzBvTHJD9Nz+9dw2SGH4K4xeQJ77YfTq5bRQ+bD8wT11JbeDPmxmGg==
+  dependencies:
+    "@octokit/openapi-types" "^12.11.0"
 
 "@primer/behaviors@1.3.1":
   version "1.3.1"
