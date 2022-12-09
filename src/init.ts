@@ -64,7 +64,7 @@ const callbackFunctions: Pick<
   onRequestGitHubData: (path, params) =>
     makeRequest("onRequestGitHubData", { path, params }),
   onRequestGitHubEndpoint: (route, parameters) =>
-    makeRequest("onRequestGitHubData", { route, parameters }),
+    makeRequest("onRequestGitHubEndpoint", { route, parameters }),
   onStoreGet: (key) => makeRequest("onStoreGet", { key }),
   onStoreSet: (key, value) =>
     makeRequest("onStoreSet", { key, value }) as Promise<void>,
@@ -109,10 +109,17 @@ const elements: HTMLElement[] = [];
 const root = ReactDOMClient.createRoot(document.getElementById("root"));
 
 const loadBundleBlock = (bundle: { name: string; content: string }[]) => {
+  let blockBundleName;
   bundle.forEach((asset) => {
-    if (asset.name.endsWith(".js")) {
-      const jsElement = document.createElement("script");
-      jsElement.textContent = `
+    if (asset.name.endsWith(".css")) {
+      const cssElement = document.createElement("style");
+      cssElement.textContent = asset.content;
+      elements.push(cssElement);
+    } else if (asset.name.endsWith("/index.js")) {
+      blockBundleName = asset.content.match(/^"use strict";var ([^=]+)=/)?.[1];
+      let content;
+      if (blockBundleName === "BlockBundle") {
+        content = `
 var BlockBundle = ({ React, ReactJSXRuntime, ReactDOM, ReactDOMClient, PrimerReact }) => {
   function require(name) {
     switch (name) {
@@ -135,50 +142,63 @@ var BlockBundle = ({ React, ReactJSXRuntime, ReactDOM, ReactDOMClient, PrimerRea
 ${asset.content}
   return BlockBundle;
 };`;
+      } else if (blockBundleName === "VanillaBlockBundle") {
+        content = asset.content;
+      } else {
+        throw new Error(`unknown block bundle name '${blockBundleName}'`);
+      }
+      const jsElement = document.createElement("script");
+      jsElement.textContent = content;
       elements.push(jsElement);
-    } else if (asset.name.endsWith(".css")) {
-      const cssElement = document.createElement("style");
-      cssElement.textContent = asset.content;
-      elements.push(cssElement);
     }
   });
   for (const el of elements) {
     document.body.appendChild(el);
   }
-  const Block = window.BlockBundle({
-    React,
-    ReactJSXRuntime,
-    ReactDOM,
-    ReactDOMClient,
-    PrimerReact,
-  }).default;
-  return (props) => {
-    const WrappedBlockComponent = (nestedProps: BlockComponentProps) => {
-      let context = {
-        ...props.context,
-        ...nestedProps.context,
+  if (blockBundleName === "BlockBundle") {
+    const Block = window.BlockBundle({
+      React,
+      ReactJSXRuntime,
+      ReactDOM,
+      ReactDOMClient,
+      PrimerReact,
+    }).default;
+    return (props) => {
+      const WrappedBlockComponent = (nestedProps: BlockComponentProps) => {
+        let context = {
+          ...props.context,
+          ...nestedProps.context,
+        };
+
+        // clear sha if viewing content from another repo
+        const parentRepo = [props.context.owner, props.context.repo].join("/");
+        const childRepo = [context.owner, context.repo].join("/");
+        const isSameRepo = parentRepo === childRepo;
+        if (!isSameRepo) {
+          context.sha = nestedProps.context.sha || "HEAD";
+        }
+
+        return React.createElement(BlockComponent, {
+          ...nestedProps,
+          context,
+        });
       };
-
-      // clear sha if viewing content from another repo
-      const parentRepo = [props.context.owner, props.context.repo].join("/");
-      const childRepo = [context.owner, context.repo].join("/");
-      const isSameRepo = parentRepo === childRepo;
-      if (!isSameRepo) {
-        context.sha = nestedProps.context.sha || "HEAD";
-      }
-
-      return React.createElement(BlockComponent, {
-        ...nestedProps,
-        context,
-      });
+      root.render(
+        React.createElement(Block, {
+          ...props,
+          BlockComponent: WrappedBlockComponent,
+        })
+      );
     };
-    root.render(
-      React.createElement(Block, {
-        ...props,
-        BlockComponent: WrappedBlockComponent,
-      })
-    );
-  };
+  } else if (blockBundleName === "VanillaBlockBundle") {
+    return (props) => {
+      // TODO(jaked)
+      // what should BlockComponent look like for vanilla blocks?
+      window.VanillaBlockBundle.default(props);
+    };
+  } else {
+    throw new Error(`unknown block bundle name '${blockBundleName}'`);
+  }
 };
 
 // redirect from the server to the production blocks frame
