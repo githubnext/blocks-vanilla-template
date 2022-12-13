@@ -299,6 +299,16 @@
   resolved "https://registry.yarnpkg.com/@github/paste-markdown/-/paste-markdown-1.4.2.tgz#aedba0972536c2fc7944931b6e62bd43dc130592"
   integrity sha512-ZwSgPyo9nA6TRngXV0QnFT4e5ujeOGxRDWN2aa6qfimz2o2VOsJ9bFGuGvB723nvzq5z9zKr6JWGtvK7MSJj3w==
 
+"@githubnext/blocks-runtime@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@githubnext/blocks-runtime/-/blocks-runtime-1.0.0.tgz#42287398c9fb9c2e43deba0402330c4d4ab38654"
+  integrity sha512-OfgpBYzRlkotUZ/SMDmH8qvmmT1c56yciv6rLIRPetaXP1LwtN/ZZf0ScS9qO3Jte9lBU4/WphhOv1NkcUzPoQ==
+  dependencies:
+    "@githubnext/blocks" "^2.3.4"
+    "@primer/react" "^35.15.1"
+    react "^18.2.0"
+    react-dom "^18.2.0"
+
 "@githubnext/blocks@^2.3.3":
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/@githubnext/blocks/-/blocks-2.3.3.tgz#31a8c58e1785be01ac3bab1610fd797973238c35"
@@ -309,6 +319,35 @@
     "@octokit/types" "^6.0.0"
     "@primer/octicons-react" "^17.3.0"
     "@primer/react" "^35.2.1"
+    "@vitejs/plugin-react" "^2.0.1"
+    chalk "^4.1.2"
+    chokidar "^3.5.3"
+    cross-spawn "^7.0.3"
+    dotenv "^16.0.1"
+    dotenv-expand "^8.0.3"
+    esbuild "0.14.54"
+    express "^4.18.1"
+    lodash.uniqueid "^4.0.1"
+    minimist "^1.2.6"
+    parse-git-config "^3.0.0"
+    picomatch-browser "^2.2.6"
+    prettier "^2.6.2"
+    react-error-boundary "^3.1.4"
+    react-query "^3.39.0"
+    styled-components "^5.3.5"
+    twind "^0.16.17"
+    vite "^3.0.0"
+
+"@githubnext/blocks@^2.3.4":
+  version "2.3.4"
+  resolved "https://registry.yarnpkg.com/@githubnext/blocks/-/blocks-2.3.4.tgz#44e50b41661dd6f38b7e61a29e7249f3812b4113"
+  integrity sha512-Kp2KMSYD3jLJEikP499/3LYxUgzAafYru5uVSelZ3cA/FAeBWSoY77g0P4R4Mj7UhgdMOinVj+JEH6GNWyYrig==
+  dependencies:
+    "@loadable/component" "^5.15.0"
+    "@octokit/openapi-types" "^12.11.0"
+    "@octokit/types" "^6.0.0"
+    "@primer/octicons-react" "^17.3.0"
+    "@primer/react" "^35.15.1"
     "@vitejs/plugin-react" "^2.0.1"
     chalk "^4.1.2"
     chokidar "^3.5.3"
